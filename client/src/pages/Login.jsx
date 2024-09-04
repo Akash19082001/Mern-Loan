@@ -7,100 +7,88 @@ import { logo, background } from "../Assets/index";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State for error messages
 
   const navigate = useNavigate();
 
   const loginUser = async (event) => {
     event.preventDefault();
-
-    try {
-      const response = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Store the token in localStorage
-        localStorage.setItem("token", data.data.token);
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "Invalid email or password");
-      }
-    } catch (error) {
-      setError("An error occurred. Please try again.");
+    const response = await fetch("http://localhost:5000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    });
+    const data = await response.json();
+    if (data.success) {
+      navigate("/dashboard");
+    } else {
+      alert("Invalid email or password");
     }
   };
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen"
+      className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center"
       style={{
         backgroundImage: `url(${background})`,
-        backgroundSize: "cover",
       }}
     >
-      <div className="text-center">
-        <img
-          className="w-80 h-70 mb-auto sm:mb-20 mx-auto min-w-[150px]"
-          src={logo}
-          alt="logo"
-        />
-        <form onSubmit={loginUser} className="mx-auto mt-4 text-left">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mt-4 mb-2 text-gray-600 text-left">
-              Login
-            </h1>
-            <p className="text-gray-500 text-left">
-              Need an account?{" "}
-              <span
-                onClick={() => navigate("/register")}
-                className="text-lime-500 cursor-pointer"
-              >
-                Sign Up
-              </span>
-            </p>
-          </div>
-          <div className="text-left mb-4">
-            <label className="block mb-1">Email</label>
+      <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg w-full max-w-sm">
+        <div className="text-center mb-6">
+          <img
+            className="w-24 h-auto mx-auto mb-4"
+            src={logo}
+            alt="logo"
+          />
+          <h1 className="text-3xl font-bold text-blue-600">Login</h1>
+        </div>
+        <form onSubmit={loginUser} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
+              placeholder="Enter your email"
               type="email"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
             />
           </div>
-          <div className="text-left mb-4">
-            <label className="block mb-1">Password</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder="Enter your password"
               type="password"
-              className="w-full px-4 py-2 border rounded-lg"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              required
             />
           </div>
-          {error && (
-            <div className="mb-4 text-red-500">
-              {error}
-            </div>
-          )}
-          <div className="flex justify-between items-center">
+          <div className="flex items-center flex-col">
             <button
               type="submit"
-              className="bg-lime-500 text-white py-2 px-4 rounded-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Login
             </button>
-            <span className="text-sm text-gray-500 cursor-pointer">
-              Forget password?
-            </span>
+            <p className="text-lg text-gray-600 tex gap-5 mt-2 ">
+              Need an account?{" "}
+              <span
+                onClick={() => navigate("/register")}
+                className="text-blue-400 hover:text-blue-700 font-medium cursor-pointer ml-1"
+              >
+                register
+              </span>
+            </p>
           </div>
         </form>
       </div>
