@@ -10,20 +10,7 @@ import MarketPlace from "./pages/MarketPlace";
 import Settings from "./pages/Settings";
 import ShowcaseManagement from "./pages/ShowcaseManagement ";
 import UserManagement from "./pages/UserManagement";
-
-// import {
-//   Dashboard,
-//   Login,
-//   Register,
-//   Role,
-//   ContentManagement,
-//   CustomerManagement,
-//   HomeService,
-//   MarketPlace,
-//   Settings,
-//   ShowcaseManagement,
-//   UserManagement,
-// } from "./pages/ContentManagement";
+import ProtectedRoute from "./Route/ProtectedRoute"; // Import ProtectedRoute
 
 const App = () => {
   return (
@@ -32,15 +19,15 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/role-management" element={<Role />} />
-          <Route path="/content-management" element={<ContentManagement />} />
-          <Route path="/customer-management" element={<CustomerManagement />} />
-          <Route path="/home-service" element={<HomeService />} />
-          <Route path="/market-place" element={<MarketPlace />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/showcase-management" element={<ShowcaseManagement />} />
-          <Route path="/user-management" element={<UserManagement />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
+          <Route path="/role-management" element={<ProtectedRoute element={Role} />} />
+          <Route path="/content-management" element={<ProtectedRoute element={ContentManagement} />} />
+          <Route path="/customer-management" element={<ProtectedRoute element={CustomerManagement} />} />
+          <Route path="/home-service" element={<ProtectedRoute element={HomeService} />} />
+          <Route path="/market-place" element={<ProtectedRoute element={MarketPlace} />} />
+          <Route path="/settings" element={<ProtectedRoute element={Settings} />} />
+          <Route path="/showcase-management" element={<ProtectedRoute element={ShowcaseManagement} />} />
+          <Route path="/user-management" element={<ProtectedRoute element={UserManagement} />} />
         </Routes>
       </main>
     </BrowserRouter>
