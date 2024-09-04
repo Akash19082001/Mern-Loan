@@ -1,18 +1,33 @@
-// src/Pages/Login.jsx
-
-import React, { useState } from "react";
+// src/pages/Login.jsx
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import { logo, background } from "../Assets/index";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // State for error messages
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
+  const validateInputs = () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return false;
+    }
+    return true;
+  };
 
   const loginUser = async (event) => {
     event.preventDefault();
+
+    if (!validateInputs()) return;
+
+    setLoading(true);
+    setError("");
 
     try {
       const response = await fetch("http://localhost:5000/api/login", {
@@ -26,14 +41,13 @@ const Login = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Store the token in localStorage
-        localStorage.setItem("token", data.data.token);
+        login(data.data.token); // Use context to set authentication
         navigate("/dashboard");
-      } else {
-        setError(data.message || "Invalid email or password");
       }
     } catch (error) {
       setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,42 +80,32 @@ const Login = () => {
               </span>
             </p>
           </div>
-          <div className="text-left mb-4">
-            <label className="block mb-1">Email</label>
+          <div className="mb-4">
+            <label className="block text-gray-700">Email</label>
             <input
+              type="email"
+              className="w-full px-3 py-2 border rounded"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              type="email"
-              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
-          <div className="text-left mb-4">
-            <label className="block mb-1">Password</label>
+          <div className="mb-4">
+            <label className="block text-gray-700">Password</label>
             <input
+              type="password"
+              className="w-full px-3 py-2 border rounded"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              type="password"
-              className="w-full px-4 py-2 border rounded-lg"
             />
           </div>
-          {error && (
-            <div className="mb-4 text-red-500">
-              {error}
-            </div>
-          )}
-          <div className="flex justify-between items-center">
-            <button
-              type="submit"
-              className="bg-lime-500 text-white py-2 px-4 rounded-sm"
-            >
-              Login
-            </button>
-            <span className="text-sm text-gray-500 cursor-pointer">
-              Forget password?
-            </span>
-          </div>
+          {error && <p className="text-red-500">{error}</p>}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-blue-500 text-white rounded"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
         </form>
       </div>
     </div>
