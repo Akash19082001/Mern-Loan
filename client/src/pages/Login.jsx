@@ -12,7 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-  
+
   const validateInputs = () => {
     if (!email || !password) {
       setError("Email and password are required");
@@ -110,6 +110,7 @@ const Login = () => {
           </button>
         </form>
       </div>
+
     </div>
   );
 };

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // MongoDB Connection Function
 const connectDB = async (url) => {
   try {
-    // Optional: Set global options for mongoose, like strict query handling
+    // Optional: Set global options for mongoose
     mongoose.set('strictQuery', true);
 
     // Connect to MongoDB
