@@ -12,7 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-
+  
   const validateInputs = () => {
     if (!email || !password) {
       setError("Email and password are required");
@@ -43,6 +43,8 @@ const Login = () => {
       if (data.success) {
         login(data.data.token); // Use context to set authentication
         navigate("/dashboard");
+      } else {
+        setError(data.message || "Login failed. Please try again.");
       }
     } catch (error) {
       setError("An error occurred. Please try again.");

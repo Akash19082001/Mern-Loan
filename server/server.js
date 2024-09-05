@@ -95,7 +95,7 @@ app.get("/api/users", async (req, res) => {
 });
 
 // Default Route
-app.get("/", (req, res) => {
+app.get("/login", (req, res) => {
   res.send("Hello, this is the backend");
 });
 

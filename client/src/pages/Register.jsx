@@ -29,7 +29,7 @@ const Register = () => {
       });
       const data = await response.json();
       console.log(data); // Log the response data to the console
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       console.error(error);
     }
@@ -57,7 +57,7 @@ const Register = () => {
             <p className="text-gray-500 text-left">
               Already have an account?{" "}
               <span
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/login")}
                 className="text-lime-500 cursor-pointer"
               >
                 Sign In

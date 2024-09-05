@@ -22,7 +22,7 @@ const ContentManagement = () => {
         <Menubar />
       </div>
       <div className="w-full h-screen">
-        <Navbar pagename={"Content Management"} />
+        <Navbar pagename={"Content Management"} /> 
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         Content Management
       </div>
