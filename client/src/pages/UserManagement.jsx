@@ -24,7 +24,7 @@ const ShowcaseManagement = () => {
         <Navbar pagename={"Showcase Management"} />
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <div className="mt-4">
-          <p>Showcase Management</p>
+          <p>User Management</p>
         </div>
       </div>
     </div>
