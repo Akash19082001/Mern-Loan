@@ -1,17 +1,14 @@
-// src/Components/Navbar.jsx
-
-import { demouser } from "../Assets/index"; // Ensure the path is correct
+import { demouser } from "../Assets/index"; 
+import { useEffect, useState } from "react";
 
 const Navbar = ({ pagename }) => {
-  // Uncomment and use if you need to fetch user info
-  // const [userInfo, setUserInfo] = useState([]);
+  const [name, setName] = useState(""); // State for storing the name
 
-  // useEffect(() => {
-  //   axios.get("http://localhost:5000/api/users").then((response) => {
-  //     setUserInfo(response.data.data);
-  //     console.log(userInfo);
-  //   });
-  // }, []);
+  useEffect(() => {
+    // Get the name and role from localStorage after login or registration
+    const userName = localStorage.getItem("name");
+    setName(userName || "Guest"); // Default to "Guest" if no name is found
+  }, []);
 
   return (
     <nav className="bg-white flex items-center justify-between h-20 px-8 shadow-sm">
@@ -23,8 +20,8 @@ const Navbar = ({ pagename }) => {
           <img src={demouser} alt="avatar" className="rounded-full h-8 w-8" />
         </div>
         <div className="flex flex-col text-sm">
-          <span className="font-medium">GK Micro</span>
-          <span>Super Admin</span>
+          <span className="font-medium">Gk MiCro</span> {/* Display the name */}
+          <span>{name}</span> {/* Display the role */}
         </div>
       </div>
     </nav>

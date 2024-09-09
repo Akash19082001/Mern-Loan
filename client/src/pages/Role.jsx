@@ -4,7 +4,6 @@ import { useState } from "react";
 import Menubar from "../Components/Manubar";
 import MenuToggle from "../Components/MenuToggle";
 import Navbar from "../Components/Navbar";
-import UsersTable from "../Components/Table";
 
 const RoleManagement = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -16,7 +15,7 @@ const RoleManagement = () => {
   return (
     <div className="flex">
       <div
-        className={`w-1/4 h-screen bg-gray-100 ${
+        className={`w-1/4 h-screen bg-gray-200 ${
           showMenu ? "" : "hidden"
         } lg:block`}
       >
@@ -26,7 +25,6 @@ const RoleManagement = () => {
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <Navbar pagename={"Permission and Role Management"} />
         <div>
-          <UsersTable />
         </div>
       </div>
     </div>

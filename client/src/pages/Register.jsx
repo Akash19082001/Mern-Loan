@@ -1,13 +1,10 @@
-// src/Pages/Register.jsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { logo, background } from "../Assets/index"; // Ensure the path is correct
+import { logo, background } from "../Assets/index";
 
 const Register = () => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); // Capture the user's name
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -23,13 +20,19 @@ const Register = () => {
         body: JSON.stringify({
           name,
           email,
-          role,
           password,
         }),
       });
       const data = await response.json();
-      console.log(data); // Log the response data to the console
-      navigate("/login");
+
+      if (data.success) {
+        // Store the user's name and token in localStorage for later use
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("name", data.data.user.name); // Store the name
+
+        // Redirect to login or another page after registration
+        navigate("/login");
+      }
     } catch (error) {
       console.error(error);
     }
@@ -81,16 +84,6 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               type="email"
-              className="w-full px-4 py-4 border rounded-lg mb-4"
-            />
-          </div>
-          <div className="text-left">
-            <span>Role</span>
-            <input
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              placeholder="Role"
-              type="text"
               className="w-full px-4 py-4 border rounded-lg mb-4"
             />
           </div>
