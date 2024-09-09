@@ -10,6 +10,7 @@ import MarketPlace from "./pages/MarketPlace";
 import Settings from "./pages/Settings";
 import ShowcaseManagement from "./pages/ShowcaseManagement";
 import UserManagement from "./pages/UserManagement";
+import BranchDetails from "./pages/BranchDetails";
 import NotFound from "./pages/404";
 import { AuthProvider } from "./context/AuthContext";
 import Protected from "./ProtectedRoute/protected";
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/settings" element={<Settings />} />
             <Route path="/showcase-management" element={<ShowcaseManagement />} />
             <Route path="/user-management" element={<UserManagement />} />
+            <Route exact path="/branches/:companyName" element={<BranchDetails />} />
           </Route>
           <Route path="*" element={<NotFound />} /> {/* Catch-all route for 404 */}
         </Routes>
