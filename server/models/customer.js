@@ -23,7 +23,7 @@ const customerSchema = new mongoose.Schema({
 // Function to create or use a collection for a specific company
 const getCustomerModel = (companyName) => {
   const modelName = `Company_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}`;
-  console.log("Generated Model Name:", modelName);
+  
   
   // Check if the model already exists, if not create it
   if (!mongoose.models[modelName]) {
