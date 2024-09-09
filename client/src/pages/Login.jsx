@@ -108,9 +108,19 @@ const Login = () => {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+
+          {/* Add Forgot Password Button */}
+          <div className="mt-4 text-left">
+            <button
+              type="button"
+              className="text-lime-500 hover:underline"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot Password?
+            </button>
+          </div>
         </form>
       </div>
-
     </div>
   );
 };

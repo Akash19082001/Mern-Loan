@@ -13,6 +13,7 @@ import UserManagement from "./pages/UserManagement";
 import NotFound from "./pages/404";
 import { AuthProvider } from "./context/AuthContext";
 import Protected from "./ProtectedRoute/protected";
+import ForgotPassword from "./Components/ForgotPassword";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           <Route path="/" element={<Login />} /> {/* Set default route to Login */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route element={<Protected />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/role-management" element={<Role />} />
