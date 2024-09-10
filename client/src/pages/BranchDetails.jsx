@@ -20,11 +20,13 @@ const BranchDetails = () => {
         throw new Error('Failed to fetch company details');
       }
       const data = await response.json();
+      console.log('Company data:', data); // Log to verify the structure
       setCompany(data.company);
     } catch (error) {
       console.error('Error fetching company details:', error);
     }
   };
+  
 
   useEffect(() => {
     fetchCompanyDetails();
@@ -49,7 +51,7 @@ const BranchDetails = () => {
             <p><strong>Address:</strong> {company.address}</p>
             <p><strong>Date of Start:</strong> {new Date(company.dateOfStart).toLocaleDateString()}</p>
             <p><strong>Mode of AMC:</strong> {company.modeOfAmc}</p>
-             <p> <strong>Reg NO:</strong> {company.regNo} </p>
+            <p> <strong>Reg NO:</strong> {company.regNo} </p>
 
             <h3 className="mt-6 text-lg font-semibold">Branches</h3>
             {company.branches && company.branches.length > 0 ? (

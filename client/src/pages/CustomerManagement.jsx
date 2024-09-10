@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Menubar from "../Components/Manubar";
 import MenuToggle from "../Components/MenuToggle";
 import Navbar from "../Components/Navbar";
@@ -23,6 +23,27 @@ const CustomerManagement = () => {
     branchStartDate: "", // New field for branch Start Date
     branchUniqueId: "", // New field for branch Unique ID
   });
+
+  useEffect(() => {
+    if (companyType === "New") {
+      const fetchRegNo = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/api/customers");
+          if (!response.ok) throw new Error("Failed to fetch");
+          const data = await response.json();
+          const newRegNo = data.companyRegNo + 1;
+          setFormData((prevData) => ({
+            ...prevData,
+            regNo: `${newRegNo}.0`,
+          }));
+        } catch (error) {
+          console.error("Error fetching registration number:", error);
+        }
+      };
+      fetchRegNo();
+    }
+  }, [companyType]);
+  
 
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
@@ -83,6 +104,23 @@ const CustomerManagement = () => {
 
       const data = await response.json();
       if (response.ok && data.success) {
+        // Get latest branch regNo for the company
+        response = await fetch(
+          `http://localhost:5000/api/customers/getLatestBranchRegNo/${formData.companyName}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const branchData = await response.json();
+        const branchCount = branchData.branches ? branchData.branches.length : 0;
+        const newBranchRegNo = branchCount > 0 ? `${branchData.regNo}.${branchCount}` : `${branchData.regNo}`;
+
+
+    
         // Add branch to existing company
         response = await fetch(
           `http://localhost:5000/api/customers/addBranch`,
@@ -100,7 +138,8 @@ const CustomerManagement = () => {
               branchAddress: formData.branchAddress,
               branchAmc: formData.branchAmc,
              branchStartDate: formData.branchStartDate,
-             branchUniqueId: formData.branchUniqueId,
+             branchUniqueId: newBranchRegNo, // Assign new branch regNo
+            //  branchUniqueId: formData.branchUniqueId, // Assign new branch regNo
             }),
           }
         );
@@ -238,7 +277,7 @@ const CustomerManagement = () => {
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-gray-700">Reg No</label>
                 <input
                   type="text"
@@ -247,7 +286,7 @@ const CustomerManagement = () => {
                   onChange={handleChange}
                   className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                 />
-              </div>
+              </div> */}
               <div>
                 <label className="block text-gray-700">Date of Start</label>
                 <input
@@ -364,7 +403,7 @@ const CustomerManagement = () => {
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-gray-700">
                       Branch Unique ID
                     </label>
@@ -375,7 +414,8 @@ const CustomerManagement = () => {
                       onChange={handleChange}
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     />
-                  </div>
+                  </div> */}
+                 
                 </>
               )}
             </>
