@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { init } = require("./register");
 
 // Define the schema for customer data with branches array
 const customerSchema = new mongoose.Schema({
@@ -17,7 +18,7 @@ const customerSchema = new mongoose.Schema({
     branchAddress: String,
     branchAmc: String,
     branchStartDate: Date,
-    branchUniqueId: String,
+    branchUniqueId: Number,
   }]
 });
 

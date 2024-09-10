@@ -7,7 +7,7 @@ import Navbar from "../Components/Navbar";
 const ShowcaseManagement = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [branchId, setBranchId] = useState(""); // New state for branch ID
+  const [branchUniqueId, setBranchUniqueId] = useState(""); // State for branch unique ID
   const [companyDetails, setCompanyDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -21,56 +21,47 @@ const ShowcaseManagement = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleBranchIdChange = (event) => {
-    setBranchId(event.target.value);
+  const handleBranchUniqueIdChange = (event) => {
+    setBranchUniqueId(event.target.value);
   };
 
   const handleSearchSubmit = async (event) => {
     event.preventDefault();
+    if (!searchTerm) {
+      setError("Please enter a company name.");
+      return;
+    }
+
     setLoading(true);
     setError("");
+
     try {
-      const response = await fetch(`http://localhost:5000/api/companies/search?companyName=${searchTerm}&branchId=${branchId}`);
+      const response = await fetch(
+        `http://localhost:5000/api/companies/search?companyName=${searchTerm}&branchUniqueId=${branchUniqueId}`
+      );
       const data = await response.json();
+      
       if (data.success) {
-        setCompanyDetails(data.data);
+        if (branchUniqueId) {
+          // Update to only display the matched branch
+          setCompanyDetails({ ...data.data, branches: data.data.branches });
+        } else {
+          setCompanyDetails(data.data); // Show full company details
+        }
       } else {
-        setError(data.message || "No results found");
+        setError(data.message || "No results found.");
       }
     } catch (error) {
       console.error("Error fetching company details:", error);
-      setError("An error occurred while fetching data");
+      setError("An error occurred while fetching data.");
     }
+
     setLoading(false);
   };
 
   const handleEdit = (branchIndex) => {
     setEditing(branchIndex);
     // Add logic to handle editing the branch
-  };
-
-  const handleDelete = async (branchIndex) => {
-    if (window.confirm("Are you sure you want to delete this branch?")) {
-      try {
-        const branchId = companyDetails.branches[branchIndex].branchId;
-        const response = await fetch(`http://localhost:5000/api/companies/${companyDetails._id}/branches/${branchId}`, {
-          method: 'DELETE'
-        });
-        const data = await response.json();
-        if (data.success) {
-          // Remove the deleted branch from the state
-          setCompanyDetails(prevDetails => ({
-            ...prevDetails,
-            branches: prevDetails.branches.filter((_, index) => index !== branchIndex)
-          }));
-        } else {
-          setError(data.message || "Failed to delete branch");
-        }
-      } catch (error) {
-        console.error("Error deleting branch:", error);
-        setError("An error occurred while deleting the branch");
-      }
-    }
   };
 
   return (
@@ -94,9 +85,9 @@ const ShowcaseManagement = () => {
             />
             <input
               type="text"
-              value={branchId}
-              onChange={handleBranchIdChange}
-              placeholder="Branch ID (optional)"
+              value={branchUniqueId}
+              onChange={handleBranchUniqueIdChange}
+              placeholder="Branch Unique ID (optional)"
               className="border border-gray-300 p-3 rounded-full w-32 shadow-md focus:outline-none focus:ring-2 focus:ring-black-500 transition duration-200"
             />
             <button
@@ -114,34 +105,56 @@ const ShowcaseManagement = () => {
           {error && <p className="text-center text-red-500">{error}</p>}
           {companyDetails && (
             <div className="bg-white p-4 shadow-md rounded-md">
-              <h2 className="text-xl font-semibold">Company Details</h2>
-              <p><strong>Name:</strong> {companyDetails.companyName}</p>
-              <p><strong>Contact:</strong> {companyDetails.contactNumber}</p>
-              <p><strong>Address:</strong> {companyDetails.address}</p>
-
-              <h2 className="text-xl font-semibold mt-4">Branches</h2>
-              {companyDetails.branches.length > 0 ? (
-                <ul className="space-y-4">
-                  {companyDetails.branches.map((branch, index) => (
-                    <li key={branch.branchId} className="bg-gray-100 p-4 shadow-md rounded-md flex justify-between items-center">
-                      <div>
-                        <p><strong>Branch Name:</strong> {branch.branchName}</p>
-                        <p><strong>Contact:</strong> {branch.branchContactNumber}</p>
-                        <p><strong>Address:</strong> {branch.branchAddress}</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button onClick={() => handleEdit(index)} className="text-blue-500 hover:text-blue-700">
-                          <FaEdit />
-                        </button>
-                        <button onClick={() => handleDelete(index)} className="text-red-500 hover:text-red-700">
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+              {branchUniqueId ? (
+                <>
+                  <h2 className="text-xl font-semibold">Branch Details</h2>
+                  <div className="bg-gray-100 p-4 shadow-md rounded-md">
+                    {companyDetails.branches.length > 0 ? (
+                      <>
+                        <p><strong>Branch Name:</strong> {companyDetails.branches[0].branchName}</p>
+                        <p><strong>Contact:</strong> {companyDetails.branches[0].branchContactNumber}</p>
+                        <p><strong>Address:</strong> {companyDetails.branches[0].branchAddress}</p>
+                      </>
+                    ) : (
+                      <p>No matching branch found.</p>
+                    )}
+                  </div>
+                </>
               ) : (
-                <p>No branches found.</p>
+                <>
+                  <h2 className="text-xl font-semibold">Company Details</h2>
+                  <p><strong>Name:</strong> {companyDetails.companyName}</p>
+                  <p><strong>Contact:</strong> {companyDetails.contactNumber}</p>
+                  <p><strong>Address:</strong> {companyDetails.address}</p>
+
+                  <h2 className="text-xl font-semibold mt-4">Branches</h2>
+                  {companyDetails.branches.length > 0 ? (
+                    <ul className="space-y-4">
+                      {companyDetails.branches.map((branch, index) => (
+                        <li
+                          key={branch.branchId}
+                          className="bg-gray-100 p-4 shadow-md rounded-md flex justify-between items-center"
+                        >
+                          <div>
+                            <p><strong>Branch Name:</strong> {branch.branchName}</p>
+                            <p><strong>Contact:</strong> {branch.branchContactNumber}</p>
+                            <p><strong>Address:</strong> {branch.branchAddress}</p>
+                          </div>
+                          <div className="flex space-x-2">
+                            <button onClick={() => handleEdit(index)} className="text-blue-500 hover:text-blue-700">
+                              <FaEdit />
+                            </button>
+                            <button onClick={() => handleDelete(index)} className="text-red-500 hover:text-red-700">
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No branches found.</p>
+                  )}
+                </>
               )}
             </div>
           )}
