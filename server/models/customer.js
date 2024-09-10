@@ -10,6 +10,7 @@ const customerSchema = new mongoose.Schema({
   dateOfStart: Date,
   modeOfAmc: String,
   branches: [{
+    branchId: { type: Number, unique: true }, // Unique ID for each branch
     branchName: String,
     branchContactPerson: String,
     branchContactNumber: String,
@@ -20,18 +21,29 @@ const customerSchema = new mongoose.Schema({
   }]
 });
 
-// Function to create or use a collection for a specific company
 const getCustomerModel = (companyName) => {
   const modelName = `Company_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}`;
   
-  
-  // Check if the model already exists, if not create it
   if (!mongoose.models[modelName]) {
     return mongoose.model(modelName, customerSchema, modelName);
   }
   
-  // Return the existing model
   return mongoose.model(modelName);
 };
 
-module.exports = { getCustomerModel };
+// Function to search for a company by name
+const searchCompanyByName = async (companyName) => {
+  const Model = getCustomerModel(companyName);
+  try {
+    const company = await Model.findOne({ companyName: new RegExp(companyName, 'i') }).lean();
+    if (!company) {
+      return { success: false, message: 'Company not found' };
+    }
+    return { success: true, data: company };
+  } catch (error) {
+    console.error('Error fetching company details:', error);
+    return { success: false, message: 'Server error' };
+  }
+};
+
+module.exports = { getCustomerModel, searchCompanyByName };

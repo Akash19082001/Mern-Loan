@@ -52,7 +52,7 @@ const UserManagement = () => {
         <div className="mt-4">
           {loading ? ( // Conditional rendering for loading state
             <div className="flex justify-center items-center h-64">
-              <p className="text-xl font-semibold text-gray-600">
+              <p className="text-xl font-semibold text-gray-600 pt-60">
                 Just a sec...
               </p>
               {/* Optional spinner */}

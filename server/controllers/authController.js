@@ -5,7 +5,7 @@ const User = require("../models/register");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
     
     // Hash the password for security
     const saltRounds = 10;
@@ -15,7 +15,6 @@ exports.register = async (req, res) => {
     const user = await User.create({
       name,
       email,
-      role,
       password: hashedPassword,
     });
 
@@ -31,7 +30,6 @@ exports.register = async (req, res) => {
         user: {
           name: user.name,
           email: user.email,
-          role: user.role, // include role here
         },
         token
       }
@@ -66,7 +64,6 @@ exports.login = async (req, res) => {
         user: {
           name: user.name,
           email: user.email,
-          role: user.role
         },
         token
       }
