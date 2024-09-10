@@ -27,15 +27,23 @@ router.post("/verify", async (req, res) => {
   }
 });
 
-// Add branch to existing customer
+
+// Add branch to existing customer with dynamic regNo for branch
 router.post("/addBranch", async (req, res) => {
-  const { companyName, regNo, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId } = req.body;
+  const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId } = req.body;
 
   try {
-    const CustomerModel = getCustomerModel(companyName); // Use dynamic model
-    const existingCustomer = await CustomerModel.findOne({ regNo });
+    const CustomerModel = getCustomerModel(companyName);
+    const existingCustomer = await CustomerModel.findOne({ companyName });
 
     if (existingCustomer) {
+      const branches = existingCustomer.branches || [];
+      const branchCount = branches.length;
+
+      // Use the company base regNo to generate the branch regNo
+      const companyBaseRegNo = existingCustomer.regNo.split('.')[0];
+      const newBranchRegNo = `${companyBaseRegNo}.${branchCount + 1}`; // Increment branch number
+
       existingCustomer.branches.push({
         branchName,
         branchContactPerson,
@@ -43,11 +51,11 @@ router.post("/addBranch", async (req, res) => {
         branchAddress,
         branchAmc,
         branchStartDate,
-        branchUniqueId
+        branchUniqueId,
+        regNo: newBranchRegNo,  // Assign regNo for branch
       });
-      
-      await existingCustomer.save();
 
+      await existingCustomer.save();
       res.status(200).json({ success: true, data: existingCustomer });
     } else {
       res.status(404).json({ success: false, message: "Company not found" });
@@ -57,15 +65,36 @@ router.post("/addBranch", async (req, res) => {
   }
 });
 
-// Create new customer
+
+
+// Create new customer with dynamic regNo
 router.post("/", async (req, res) => {
   const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId } = req.body;
 
   try {
-    const CustomerModel = getCustomerModel(companyName); // Use Dynamic model
+    // Get all customer models to count existing companies
+    const allCustomers = await mongoose.connection.db.listCollections().toArray();
+    const companyCount = allCustomers.filter(c => c.name.startsWith('Company_')).length; // Count companies
+
+    // Generate regNo for the new company
+    const newCompanyRegNo = `${companyCount + 1}.0`;
+
+    const CustomerModel = getCustomerModel(companyName);
     const newCustomer = new CustomerModel({
       ...req.body,
-      branches: branchName ? [{ branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId }] : [],
+      regNo: newCompanyRegNo,
+      branches: branchName
+        ? [{
+            branchName,
+            branchContactPerson,
+            branchContactNumber,
+            branchAddress,
+            branchAmc,
+            branchStartDate,
+            branchUniqueId,
+            regNo: `${companyCount + 1}.1`,  // First branch of new company
+          }]
+        : []
     });
 
     await newCustomer.save();
@@ -102,7 +131,8 @@ router.get("/company/:companyName", async (req, res) => {
   const { companyName } = req.params;
   try {
     const CustomerModel = getCustomerModel(companyName);
-    const company = await CustomerModel.findOne({ companyName });
+    const company = await CustomerModel.findOne({}); // Fetch a single company
+    console.log('Company data:', company); // Log to verify the data structure
 
     if (company) {
       res.status(200).json({ company });
@@ -113,5 +143,32 @@ router.get("/company/:companyName", async (req, res) => {
     handleError(res, error);
   }
 });
+
+// Route to get the latest branch registration number for a specific company
+router.get("/getLatestBranchRegNo/:companyName", async (req, res) => {
+  const { companyName } = req.params;
+  
+  try {
+    const CustomerModel = getCustomerModel(companyName);
+    const company = await CustomerModel.findOne({ companyName });
+
+    if (!company) {
+      return res.status(404).json({ success: false, message: "Company not found" });
+    }
+
+    const branches = company.branches || [];
+    const branchCount = branches.length;
+
+    // Get the latest branch regNo
+    const latestBranchRegNo = branchCount > 0
+      ? `${company.regNo.split('.')[0]}.${branchCount + 1}` // Increment branch count
+      : `${company.regNo.split('.')[0]}.1`; // Start with the first branch
+
+    res.status(200).json({ success: true, regNo: latestBranchRegNo });
+  } catch (error) {
+    handleError(res, error);
+  }
+});
+
 
 module.exports = router;
