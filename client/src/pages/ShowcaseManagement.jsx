@@ -140,14 +140,6 @@ const ShowcaseManagement = () => {
                             <p><strong>Contact:</strong> {branch.branchContactNumber}</p>
                             <p><strong>Address:</strong> {branch.branchAddress}</p>
                           </div>
-                          <div className="flex space-x-2">
-                            <button onClick={() => handleEdit(index)} className="text-blue-500 hover:text-blue-700">
-                              <FaEdit />
-                            </button>
-                            <button onClick={() => handleDelete(index)} className="text-red-500 hover:text-red-700">
-                              <FaTrash />
-                            </button>
-                          </div>
                         </li>
                       ))}
                     </ul>

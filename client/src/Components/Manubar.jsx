@@ -22,10 +22,10 @@ const Menubar = () => {
 
   const menuItems = [
     { name: "Dashboard", icon: dashboard, link: "/dashboard" },
-    { name: "User Management", icon: user, link: "/user-management" },
-    { name: "Customer Management", icon: customer, link: "/customer-management" },
+    { name: "Showcase Data", icon: user, link: "/user-management" },
+    { name: "Birth Case", icon: customer, link: "/customer-management" },
+    { name: "Search", icon: showcase, link: "/showcase-management" },
     { name: "Content Management", icon: content, link: "/content-management" },
-    { name: "Showcase Management", icon: showcase, link: "/showcase-management" },
     { name: "Home Service Management", icon: home, link: "/home-service" },
     { name: "Market Place Management", icon: market, link: "/market-place" },
     { name: "Permission & Role", icon: role, link: "/role-management" },
