@@ -23,7 +23,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 const getCustomerModel = (companyName) => {
-  const modelName = `Company_${companyName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  const modelName = `Company_${companyName.toUpperCase().replace(/[^a-zA-Z0-9]/g, '_')}`;
   
   if (!mongoose.models[modelName]) {
     return mongoose.model(modelName, customerSchema, modelName);

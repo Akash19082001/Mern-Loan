@@ -60,7 +60,7 @@ router.post("/addBranch", async (req, res) => {
       await existingCustomer.save();
 
       // Connect to the company's specific database
-      const companyDbName = `company_${companyName.toLowerCase().replace(/\s+/g, "_")}`;
+      const companyDbName = `COMPANY_${companyName.toUpperCase().replace(/\s+/g, "_")}`;
       const companyConnection = mongoose.createConnection(`mongodb+srv://akash19082001:akash19082001@atlascluster.hsvvs.mongodb.net/${companyDbName}`, {
         useNewUrlParser: true,
         useUnifiedTopology: true
@@ -80,7 +80,7 @@ router.post("/addBranch", async (req, res) => {
       });
 
       // Create a model for the branch collection
-      const branchCollectionName = `branch_${branchName.toLowerCase().replace(/\s+/g, "_")}`;
+      const branchCollectionName = `BRANCH_${branchName.toUpperCase().replace(/\s+/g, "_")}`;
       const BranchModel = companyConnection.model(branchCollectionName, branchSchema, branchCollectionName);
 
       // Save the new branch
@@ -110,7 +110,6 @@ router.post("/addBranch", async (req, res) => {
   }
 });
 
-
 // Create new customer with dynamic regNo
 router.post("/", async (req, res) => {
   const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId, branchUsername, branchPassword } = req.body;
@@ -118,7 +117,7 @@ router.post("/", async (req, res) => {
   try {
     // Get all customer models to count existing companies
     const allCustomers = await mongoose.connection.db.listCollections().toArray();
-    const companyCount = allCustomers.filter(c => c.name.startsWith('Company_')).length; // Count companies
+    const companyCount = allCustomers.filter(c => c.name.startsWith('COMPANY_')).length; // Count companies
 
     // Generate regNo for the new company
     const newCompanyRegNo = `${companyCount + 1}.0`;
@@ -128,7 +127,7 @@ router.post("/", async (req, res) => {
       ...req.body,
       regNo: newCompanyRegNo,
       branches: branchName
-        ? [{
+        ? [ {
             branchName,
             branchContactPerson,
             branchContactNumber,
@@ -139,14 +138,14 @@ router.post("/", async (req, res) => {
             branchUsername,
             branchPassword,
             regNo: `${companyCount + 1}.1`,  // First branch of new company
-          }]
+          } ]
         : []
     });
 
     await newCustomer.save();
 
     // Create a collection for the branches in the company database
-    const companyDbName = `company_${companyName.toLowerCase().replace(/\s+/g, "_")}`;
+    const companyDbName = `COMPANY_${companyName.toUpperCase().replace(/\s+/g, "_")}`;
     const companyConnection = mongoose.createConnection(`mongodb+srv://akash19082001:akash19082001@atlascluster.hsvvs.mongodb.net/${companyDbName}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true
@@ -173,15 +172,15 @@ router.post("/", async (req, res) => {
         branchUniqueId: String,
         branchUsername: String,
         branchPassword: String,
-      }]
+      } ]
     });
 
-    const CompanyModel = companyConnection.model('customer', companySchema, 'customers');
+    const CompanyModel = companyConnection.model('CUSTOMER', companySchema, 'CUSTOMERS');
     const newCompany = new CompanyModel({
       ...req.body,
       regNo: newCompanyRegNo,
       branches: branchName
-        ? [{
+        ? [ {
             branchName,
             branchContactPerson,
             branchContactNumber,
@@ -189,10 +188,10 @@ router.post("/", async (req, res) => {
             branchAmc,
             branchStartDate,
             branchUniqueId,
-            regNo: `${companyCount + 1}.1`,
             branchUsername,
-            branchPassword
-          }]
+            branchPassword,
+            regNo: `${companyCount + 1}.1`,
+          } ]
         : []
     });
 
@@ -213,8 +212,8 @@ router.get("/", async (req, res) => {
     
     for (const model of customerModels) {
       const modelName = model.name;
-      if (modelName.startsWith('Company_')) {
-        const normalizedName = modelName.replace('Company_', '').replace(/_/g, ' ');
+      if (modelName.startsWith('COMPANY_')) {
+        const normalizedName = modelName.replace('COMPANY_', '').replace(/_/g, ' ');
         const CustomerModel = getCustomerModel(normalizedName);
         const customers = await CustomerModel.find({});
         allCustomers.push(...customers);
@@ -233,9 +232,6 @@ router.get("/company/:companyName", async (req, res) => {
   try {
     const CustomerModel = getCustomerModel(companyName);
     const company = await CustomerModel.findOne({}); // Fetch a single company
-    
-  
-
     if (company) {
       res.status(200).json({ company });
     } else {
@@ -271,6 +267,5 @@ router.get("/getLatestBranchRegNo/:companyName", async (req, res) => {
     handleError(res, error);
   }
 });
-
 
 module.exports = router;
