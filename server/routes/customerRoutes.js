@@ -132,7 +132,7 @@ router.get("/company/:companyName", async (req, res) => {
   try {
     const CustomerModel = getCustomerModel(companyName);
     const company = await CustomerModel.findOne({}); // Fetch a single company
-    console.log('Company data:', company); // Log to verify the data structure
+  
 
     if (company) {
       res.status(200).json({ company });

@@ -192,7 +192,7 @@ const CustomerManagement = () => {
         <Menubar />
       </div>
       <div className="w-3/4 h-screen p-4">
-        <Navbar pagename={"Customer Management"} />
+        <Navbar pagename={"Birth Case"} />
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
 
         <form className="mt-8 space-y-4" onSubmit={handleSubmit}>

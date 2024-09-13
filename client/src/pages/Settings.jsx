@@ -14,15 +14,18 @@ const Settings = () => {
 
   return (
     <div className="flex">
+      {/* Fixed Menubar */}
       <div
-        className={`w-1/4 h-screen bg-gray-200 text-gray-500 ${
+        className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
           showMenu ? "" : "hidden"
-        } lg:block`}
+        }`}
       >
         <Menubar />
       </div>
-      <div className="flex-1 h-screen p-4">
-        <Navbar pagename={"Settings"} />
+
+      {/* Dashboard Content */}
+      <div className="flex-1 ml-96 p-4">
+          <Navbar pagename={"Dashboard"} />
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <div className="mt-4">
           <p>Settings</p>
