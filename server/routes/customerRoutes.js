@@ -27,12 +27,12 @@ router.post("/verify", async (req, res) => {
   }
 });
 
-
 // Add branch to existing customer with dynamic regNo for branch
 router.post("/addBranch", async (req, res) => {
-  const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId } = req.body;
+  const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId, branchUsername, branchPassword } = req.body;
 
   try {
+    // Find the company
     const CustomerModel = getCustomerModel(companyName);
     const existingCustomer = await CustomerModel.findOne({ companyName });
 
@@ -45,6 +45,7 @@ router.post("/addBranch", async (req, res) => {
       const newBranchRegNo = `${companyBaseRegNo}.${branchCount + 1}`; // Increment branch number
 
       existingCustomer.branches.push({
+        branchId: branchUniqueId,  // Ensure branchUniqueId is unique
         branchName,
         branchContactPerson,
         branchContactNumber,
@@ -53,9 +54,53 @@ router.post("/addBranch", async (req, res) => {
         branchStartDate,
         branchUniqueId,
         regNo: newBranchRegNo,  // Assign regNo for branch
+        branchUsername, branchPassword
       });
 
       await existingCustomer.save();
+
+      // Connect to the company's specific database
+      const companyDbName = `company_${companyName.toLowerCase().replace(/\s+/g, "_")}`;
+      const companyConnection = mongoose.createConnection(`mongodb+srv://akash19082001:akash19082001@atlascluster.hsvvs.mongodb.net/${companyDbName}`, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+      });
+
+      // Define the schema for branch collection
+      const branchSchema = new mongoose.Schema({
+        branchName: String,
+        branchContactPerson: String,
+        branchContactNumber: String,
+        branchAddress: String,
+        branchAmc: String,
+        branchStartDate: Date,
+        branchUniqueId: String,
+        branchUsername: String,
+        branchPassword: String
+      });
+
+      // Create a model for the branch collection
+      const branchCollectionName = `branch_${branchName.toLowerCase().replace(/\s+/g, "_")}`;
+      const BranchModel = companyConnection.model(branchCollectionName, branchSchema, branchCollectionName);
+
+      // Save the new branch
+      const newBranch = new BranchModel({
+        branchName,
+        branchContactPerson,
+        branchContactNumber,
+        branchAddress,
+        branchAmc,
+        branchStartDate,
+        branchUniqueId,
+        branchUsername,
+        branchPassword
+      });
+
+      await newBranch.save();
+
+      // Close the company database connection
+      companyConnection.close();
+
       res.status(200).json({ success: true, data: existingCustomer });
     } else {
       res.status(404).json({ success: false, message: "Company not found" });
@@ -66,10 +111,9 @@ router.post("/addBranch", async (req, res) => {
 });
 
 
-
 // Create new customer with dynamic regNo
 router.post("/", async (req, res) => {
-  const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId } = req.body;
+  const { companyName, branchName, branchContactPerson, branchContactNumber, branchAddress, branchAmc, branchStartDate, branchUniqueId, branchUsername, branchPassword } = req.body;
 
   try {
     // Get all customer models to count existing companies
@@ -92,12 +136,69 @@ router.post("/", async (req, res) => {
             branchAmc,
             branchStartDate,
             branchUniqueId,
+            branchUsername,
+            branchPassword,
             regNo: `${companyCount + 1}.1`,  // First branch of new company
           }]
         : []
     });
 
     await newCustomer.save();
+
+    // Create a collection for the branches in the company database
+    const companyDbName = `company_${companyName.toLowerCase().replace(/\s+/g, "_")}`;
+    const companyConnection = mongoose.createConnection(`mongodb+srv://akash19082001:akash19082001@atlascluster.hsvvs.mongodb.net/${companyDbName}`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
+    const companySchema = new mongoose.Schema({
+      companyName: { type: String, required: true },
+      contactPerson: { type: String, required: true },
+      contactNumber: { type: String, required: true },
+      address: { type: String, required: true },
+      regNo: { type: String, unique: true, required: true },
+      dateOfStart: { type: Date, required: true },
+      modeOfAmc: { type: String, required: true },
+      companyUsername: String,
+      companyPassword: String,
+      branches: [ {
+        branchId: { type: String, unique: true }, // Ensure branch Unique Id is Unique
+        branchName: String,
+        branchContactPerson: String,
+        branchContactNumber: String,
+        branchAddress: String,
+        branchAmc: String,
+        branchStartDate: Date,
+        branchUniqueId: String,
+        branchUsername: String,
+        branchPassword: String,
+      }]
+    });
+
+    const CompanyModel = companyConnection.model('customer', companySchema, 'customers');
+    const newCompany = new CompanyModel({
+      ...req.body,
+      regNo: newCompanyRegNo,
+      branches: branchName
+        ? [{
+            branchName,
+            branchContactPerson,
+            branchContactNumber,
+            branchAddress,
+            branchAmc,
+            branchStartDate,
+            branchUniqueId,
+            regNo: `${companyCount + 1}.1`,
+            branchUsername,
+            branchPassword
+          }]
+        : []
+    });
+
+    await newCompany.save();
+    companyConnection.close();
+
     res.status(201).json({ success: true, data: newCustomer });
   } catch (error) {
     handleError(res, error);
@@ -132,7 +233,7 @@ router.get("/company/:companyName", async (req, res) => {
   try {
     const CustomerModel = getCustomerModel(companyName);
     const company = await CustomerModel.findOne({}); // Fetch a single company
-    console.log('Company data:', company); // Log to verify the data structure
+    
 
     if (company) {
       res.status(200).json({ company });

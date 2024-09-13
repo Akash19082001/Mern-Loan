@@ -14,6 +14,8 @@ app.use(express.json());
 // Use the correct environment variable name
 const mongoUri = process.env.MONGO_URI;
 
+
+
 app.use("/api", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/companies", companyRoutes);

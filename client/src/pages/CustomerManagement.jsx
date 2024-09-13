@@ -15,6 +15,8 @@ const CustomerManagement = () => {
     address: "",
     dateOfStart: "", // Initialize with empty string for the date
     modeOfAmc: "No AMC",
+    companyUsername: "", // New field for company username
+    companyPassword: "", // New field for company password
     branchName: "",
     branchContactPerson: "",
     branchContactNumber: "",
@@ -22,6 +24,8 @@ const CustomerManagement = () => {
     branchAmc: "No AMC", // New field for branch AMC
     branchStartDate: "", // New field for branch Start Date
     branchUniqueId: "", // New field for branch Unique ID
+    branchUsername: "", // New field for branch username
+    branchPassword: "", // New field for branch password
   });
 
   useEffect(() => {
@@ -43,7 +47,6 @@ const CustomerManagement = () => {
       fetchRegNo();
     }
   }, [companyType]);
-  
 
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
@@ -61,6 +64,7 @@ const CustomerManagement = () => {
     e.preventDefault();
 
     const customerData = { ...formData, branch };
+    let newBranchRegNo = ""; // Declare newBranchRegNo here
 
     // If the branch is set to "No", remove branch-related data
     if (branch === "No") {
@@ -71,59 +75,15 @@ const CustomerManagement = () => {
       delete customerData.branchAmc; // Ensure to delete if not used
       delete customerData.branchStartDate; // Ensure to delete if not used
       delete customerData.branchUniqueId; // Ensure to delete if not used
+      delete customerData.branchUsername; // Ensure to delete if not used
+      delete customerData.branchPassword; // Ensure to delete if not used
       customerData.branches = [];
     } else {
       // If branch is set to "Yes", structure branch data into an array
-      customerData.branches = [
-        {
-          branchName: formData.branchName,
-          branchContactPerson: formData.branchContactPerson,
-          branchContactNumber: formData.branchContactNumber,
-          branchAddress: formData.branchAddress,
-          branchAmc: formData.branchAmc,
-          branchStartDate: formData.branchStartDate,
-          branchUniqueId: formData.branchUniqueId,
-        },
-      ];
-    }
-
-    // Different API endpoints or logic for new/existing company
-    let response;
-    if (companyType === "Existing") {
-      // Verify if company exists
-      response = await fetch(`http://localhost:5000/api/customers/verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          companyName: formData.companyName,
-          regNo: formData.regNo,
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok && data.success) {
-        // Get latest branch regNo for the company
-        response = await fetch(
-          `http://localhost:5000/api/customers/getLatestBranchRegNo/${formData.companyName}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const branchData = await response.json();
-        const branchCount = branchData.branches ? branchData.branches.length : 0;
-        const newBranchRegNo = branchCount > 0 ? `${branchData.regNo}.${branchCount}` : `${branchData.regNo}`;
-
-
-    
-        // Add branch to existing company
-        response = await fetch(
-          `http://localhost:5000/api/customers/addBranch`,
+      if (companyType === "Existing") {
+        // Verify if company exists
+        const responseVerify = await fetch(
+          `http://localhost:5000/api/customers/verify`,
           {
             method: "POST",
             headers: {
@@ -132,18 +92,75 @@ const CustomerManagement = () => {
             body: JSON.stringify({
               companyName: formData.companyName,
               regNo: formData.regNo,
-              branchName: formData.branchName,
-              branchContactPerson: formData.branchContactPerson,
-              branchContactNumber: formData.branchContactNumber,
-              branchAddress: formData.branchAddress,
-              branchAmc: formData.branchAmc,
-             branchStartDate: formData.branchStartDate,
-             branchUniqueId: newBranchRegNo, // Assign new branch regNo
-            //  branchUniqueId: formData.branchUniqueId, // Assign new branch regNo
             }),
           }
         );
+
+        const data = await responseVerify.json();
+        if (responseVerify.ok && data.success) {
+          // Get latest branch regNo for the company
+          const responseBranch = await fetch(
+            `http://localhost:5000/api/customers/getLatestBranchRegNo/${formData.companyName}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const branchData = await responseBranch.json();
+          const branchCount = branchData.branches
+            ? branchData.branches.length
+            : 0;
+          newBranchRegNo =
+            branchCount > 0
+              ? `${branchData.regNo}.${branchCount}`
+              : `${branchData.regNo}`;
+        }
+      } else {
+        // For new companies, newBranchRegNo is not used
+        newBranchRegNo = formData.regNo;
       }
+
+      customerData.branches = [
+        {
+          branchName: formData.branchName,
+          branchContactPerson: formData.branchContactPerson,
+          branchContactNumber: formData.branchContactNumber,
+          branchAddress: formData.branchAddress,
+          branchAmc: formData.branchAmc,
+          branchStartDate: formData.branchStartDate,
+          branchUniqueId: newBranchRegNo,
+          branchUsername: formData.branchUsername,
+          branchPassword: formData.branchPassword,
+        },
+      ];
+    }
+
+    // Different API endpoints or logic for new/existing company
+    let response;
+    if (companyType === "Existing") {
+      // Add branch to existing company
+      response = await fetch(`http://localhost:5000/api/customers/addBranch`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          companyName: formData.companyName,
+          regNo: formData.regNo,
+          branchName: formData.branchName,
+          branchContactPerson: formData.branchContactPerson,
+          branchContactNumber: formData.branchContactNumber,
+          branchAddress: formData.branchAddress,
+          branchAmc: formData.branchAmc,
+          branchStartDate: formData.branchStartDate,
+          branchUniqueId: newBranchRegNo, // Assign new branch regNo
+          branchUsername: formData.branchUsername,
+          branchPassword: formData.branchPassword,
+        }),
+      });
     } else {
       // Create a new company
       response = await fetch("http://localhost:5000/api/customers", {
@@ -167,6 +184,8 @@ const CustomerManagement = () => {
         address: "",
         dateOfStart: "",
         modeOfAmc: "No AMC",
+        companyUsername: "", // New field for company username
+        companyPassword: "", // New field for company password
         branchName: "",
         branchContactPerson: "",
         branchContactNumber: "",
@@ -174,6 +193,8 @@ const CustomerManagement = () => {
         branchAmc: "No AMC", // Reset new field
         branchStartDate: "", // Reset new field
         branchUniqueId: "", // Reset new field
+        branchUsername: "", // New field for branch username
+        branchPassword: "", // New field for branch password
       });
 
       setBranch("No");
@@ -311,6 +332,26 @@ const CustomerManagement = () => {
                   <option value="Yearly">Yearly</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-gray-700">Company Username</label>
+                <input
+                  type="text"
+                  name="companyUsername"
+                  value={formData.companyUsername}
+                  onChange={handleChange}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700">Company Password</label>
+                <input
+                  type="password"
+                  name="companyPassword"
+                  value={formData.companyPassword}
+                  onChange={handleChange}
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
             </>
           )}
 
@@ -379,16 +420,15 @@ const CustomerManagement = () => {
                   <div>
                     <label className="block text-gray-700">Branch AMC</label>
                     <select
-                      
                       name="branchAmc"
                       value={formData.branchAmc || "No AMC"} // Ensure controlled value
                       onChange={handleChange}
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     >
                       <option value="No AMC">No AMC</option>
-                  <option value="Quarterly">Quarterly</option>
-                  <option value="Halfly">Halfly</option>
-                  <option value="Yearly">Yearly</option>
+                      <option value="Quarterly">Quarterly</option>
+                      <option value="Halfly">Halfly</option>
+                      <option value="Yearly">Yearly</option>
                     </select>
                   </div>
                   <div>
@@ -399,6 +439,30 @@ const CustomerManagement = () => {
                       type="date"
                       name="branchStartDate"
                       value={formData.branchStartDate || ""} // Ensure controlled value
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700">
+                      Branch Username
+                    </label>
+                    <input
+                      type="text"
+                      name="branchUsername"
+                      value={formData.branchUsername}
+                      onChange={handleChange}
+                      className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700">
+                      Branch Password
+                    </label>
+                    <input
+                      type="password"
+                      name="branchPassword"
+                      value={formData.branchPassword}
                       onChange={handleChange}
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     />
@@ -415,7 +479,6 @@ const CustomerManagement = () => {
                       className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
                     />
                   </div> */}
-                 
                 </>
               )}
             </>

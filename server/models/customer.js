@@ -3,22 +3,26 @@ const { init } = require("./register");
 
 // Define the schema for customer data with branches array
 const customerSchema = new mongoose.Schema({
-  companyName: String,
-  contactPerson: String,
-  contactNumber: String,
-  address: String,
-  regNo: { type: String, unique: true },
-  dateOfStart: Date,
-  modeOfAmc: String,
+  companyName: { type: String, required: true },
+  contactPerson: { type: String, required: true },
+  contactNumber: { type: String, required: true },
+  address: { type: String, required: true },
+  regNo: { type: String, unique: true, required: true },
+  dateOfStart: { type: Date, required: true },
+  modeOfAmc: { type: String, required: true },
+  companyUsername: String,
+  companyPassword: String,
   branches: [{
-    branchId: { type: Number, unique: true }, // Unique ID for each branch
+    branchId: { type: String, unique: true }, // Unique ID for each branch
     branchName: String,
     branchContactPerson: String,
     branchContactNumber: String,
     branchAddress: String,
     branchAmc: String,
     branchStartDate: Date,
-    branchUniqueId: Number,
+    branchUniqueId: String,
+    branchUsername: String,
+    branchPassword: String,
   }]
 });
 
