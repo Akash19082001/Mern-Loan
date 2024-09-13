@@ -14,17 +14,21 @@ const RoleManagement = () => {
 
   return (
     <div className="flex">
+      {/* Fixed Menubar */}
       <div
-        className={`w-1/4 h-screen bg-gray-200 ${
+        className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
           showMenu ? "" : "hidden"
-        } lg:block`}
+        }`}
       >
         <Menubar />
       </div>
-      <div className="w-3/4 h-screen">
+
+      {/* Dashboard Content */}
+      <div className="flex-1 ml-96 p-4">
+          <Navbar pagename={"Dashboard"} />
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
-        <Navbar pagename={"Permission and Role Management"} />
-        <div>
+        <div className="mt-4">
+          <p>Permission & Role</p>
         </div>
       </div>
     </div>

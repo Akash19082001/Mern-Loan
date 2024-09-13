@@ -20,6 +20,8 @@ app.use("/api", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/companies", companyRoutes);
 
+
+
 app.get("/login", (req, res) => {
   res.send("Hello, this is the backend");
 });

@@ -38,16 +38,19 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex">
+      {/* Fixed Menubar */}
       <div
-        className={`w-1/4 bg-gray-200 text-gray-500 ${
+        className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
           showMenu ? "" : "hidden"
-        } lg:block h-full`}
+        }`}
       >
         <Menubar />
       </div>
-      <div className="flex-1 p-4">
-        <Navbar pagename={"User Management"} />
+
+      {/* Dashboard Content */}
+      <div className="flex-1 ml-96 p-4">
+          <Navbar pagename={"Dashboard"} />
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <div className="mt-4">
           {loading ? ( // Conditional rendering for loading state

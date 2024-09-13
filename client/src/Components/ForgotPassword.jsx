@@ -22,7 +22,7 @@ const ForgotPassword = () => {
     <div className={`relative h-screen flex justify-center items-center ${showResetPopup}`}>
       <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">Forgot Password</h1>
-        <p className="text-center text-gray-500 mb-6">Enter your email address to receive a password reset link.</p>
+        <p className="text-center text-gray-500 mb-6">Enter your email address to receive a password reset Popup.</p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="email"

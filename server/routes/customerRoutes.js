@@ -234,6 +234,7 @@ router.get("/company/:companyName", async (req, res) => {
     const CustomerModel = getCustomerModel(companyName);
     const company = await CustomerModel.findOne({}); // Fetch a single company
     
+  
 
     if (company) {
       res.status(200).json({ company });
