@@ -33,15 +33,21 @@ const BranchDetails = () => {
   }, [companyName]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex pt-20">
+      {/* Fixed Menubar */}
       <div
-        className={`w-1/4 bg-gray-200 text-gray-500 ${
-          showMenu ? '' : 'hidden'
-        } lg:block h-full`}>
+        className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
+          showMenu ? "" : "hidden"
+        }`}
+      >
         <Menubar />
       </div>
-      <div className="flex-1 p-4">
-        <Navbar pagename={"Branch Details"} />
+
+      {/* Dashboard Content */}
+      <div className="flex-1 ml-96 p-4">
+      <div className="fixed top-0 left-96 w-[calc(100%-24rem)] z-10 bg-white shadow-md">
+    <Navbar pagename={"Search & Modifier"} />
+  </div>
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         {company ? (
           <div className="mt-4">

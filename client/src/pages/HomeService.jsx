@@ -13,7 +13,7 @@ const HomeService = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex pt-20">
       {/* Fixed Menubar */}
       <div
         className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
@@ -25,10 +25,12 @@ const HomeService = () => {
 
       {/* Dashboard Content */}
       <div className="flex-1 ml-96 p-4">
-          <Navbar pagename={"Dashboard"} />
+      <div className="fixed top-0 left-96 w-[calc(100%-24rem)] z-10 bg-white shadow-md">
+    <Navbar pagename={"Service Management"} />
+  </div>
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <div className="mt-4">
-          <p>Service Management</p>
+          <p>Soon...</p>
         </div>
       </div>
     </div>

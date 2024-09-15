@@ -205,18 +205,23 @@ const CustomerManagement = () => {
 
   return (
     <div className="flex">
+      {/* Fixed Menubar */}
       <div
-        className={`w-1/4 bg-gray-200 text-gray-500 ${
+        className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
           showMenu ? "" : "hidden"
-        } lg:block`}
+        }`}
       >
         <Menubar />
       </div>
-      <div className="w-3/4 h-screen p-4">
-        <Navbar pagename={"Birth Case"} />
+
+      {/* Dashboard Content */}
+      <div className="flex-1 ml-96 p-4">
+      <div className="fixed top-0 left-96 w-[calc(100%-24rem)] z-10 bg-white shadow-md">
+    <Navbar pagename={"Birth Case"} />
+  </div>
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
 
-        <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-4 pt-20" onSubmit={handleSubmit}>
           {/* Select Existing or New Company */}
           <div>
             <label className="block text-gray-700">Select Company Type</label>

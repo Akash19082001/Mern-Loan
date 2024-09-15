@@ -4,7 +4,6 @@ import MenuToggle from "../Components/MenuToggle";
 import Navbar from "../Components/Navbar";
 import Card from "../Components/Dashboard-card";
 import { reedem, service, users, revenue } from "../Assets"; // Ensure correct import paths
-import ChartComponent from "../Components/Chart";
 
 const Dashboard = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -14,7 +13,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex pt-10">
       {/* Fixed Menubar */}
       <div
         className={`fixed top-0 left-0 h-screen w-96 bg-gray-200 text-gray-500 lg:block ${
@@ -26,7 +25,9 @@ const Dashboard = () => {
 
       {/* Dashboard Content */}
       <div className="flex-1 ml-96 p-4">
-          <Navbar pagename={"Dashboard"} />
+      <div className="fixed top-0 left-96 w-[calc(100%-24rem)] z-10 bg-white shadow-md">
+    <Navbar pagename={"Dashboard"} />
+  </div>
         <MenuToggle showMenu={showMenu} handleMenuToggle={handleMenuToggle} />
         <div className="mt-6">
         </div>
@@ -61,26 +62,6 @@ const Dashboard = () => {
               subtitle={"New Users"}
               icon={users}
               color={"bg-gradient-to-r from-lime-400 to-lime-600"}
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 justify-between w-full px-2 mb-4">
-            <ChartComponent
-              heading="Total Active Users"
-              fields={[
-                { name: "Today's active users", value: 300 },
-                { name: "Yesterday's active users", value: 50 },
-                { name: "Tomorrow's active users", value: 100 },
-                { name: "Last Month's active users", value: 150 },
-              ]}
-            />
-            <ChartComponent
-              heading="Total Active Bookings"
-              fields={[
-                { name: "Today's active bookings", value: 300 },
-                { name: "Yesterday's active bookings", value: 50 },
-                { name: "Tomorrow's active bookings", value: 100 },
-                { name: "Last Month's active bookings", value: 150 },
-              ]}
             />
           </div>
         </div>
