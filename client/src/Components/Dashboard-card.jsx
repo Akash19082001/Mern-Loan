@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types';
 
 const Card = ({ title, subtitle, icon, color }) => {
+  console.log("subtitle",subtitle)
   return (
     <div
       className={`shadow-md rounded-lg p-4 flex flex-col w-64 h-30 ${color} bg-white`}
